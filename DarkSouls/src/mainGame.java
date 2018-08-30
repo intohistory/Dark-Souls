@@ -5,6 +5,7 @@ import java.util.Random;
 
 public class mainGame 
 {
+	//GAY GAY GAY GAYs
 	enum Item{CellKey, BasicShield, StarterSword, LongSword}
 	enum Room{Cell, HollowHallway, LadderRoom, Bonfire1, BossCourtyard, Bonfire2, ArcherHallway, BoulderRoom, UpperFloor, Path}
 	
