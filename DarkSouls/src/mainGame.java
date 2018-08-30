@@ -5,7 +5,6 @@ import java.util.Random;
 
 public class mainGame 
 {
-	//GAY GAY GAY GAYs
 	enum Item{CellKey, BasicShield, StarterSword, LongSword}
 	enum Room{Cell, HollowHallway, LadderRoom, Bonfire1, BossCourtyard, Bonfire2, ArcherHallway, BoulderRoom, UpperFloor, Path}
 	
@@ -15,6 +14,10 @@ public class mainGame
 	public static ItemObject chestSlot = null;
 	public static ItemObject leggingsSlot = null;
 	public static ItemObject bootsSlot = null;
+	
+	/* FUCKING GAY HAH AHAH AHAH H
+	
+	*/
 	
 	public static RoomObject currentRoom;
 	public static RoomObject respawnRoom;
