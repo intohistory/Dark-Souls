@@ -3,6 +3,8 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Random;
 
+// John u are bad
+
 public class mainGame 
 {
 	enum Item{CellKey, BasicShield, StarterSword, LongSword}
