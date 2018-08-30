@@ -177,7 +177,6 @@ public class mainGame
 				boolean validCommand = true;
 				if(nextCommand.length() >= 8 && nextCommand.substring(0, 6).toLowerCase().equals("attack"))
 				{
-					Random rand = new Random();
 					if(nextCommand.substring(7, 8) != null)
 					{
 						int enemyNum = Integer.parseInt(nextCommand.substring(7, 8));
@@ -189,7 +188,6 @@ public class mainGame
 				}
 				else if(nextCommand.length() >= 13 && nextCommand.substring(0, 11).toLowerCase().equals("heavyattack"))
 				{
-					Random rand = new Random();
 					if(nextCommand.substring(7, 8) != null)
 					{
 						int enemyNum = Integer.parseInt(nextCommand.substring(12, 13));
