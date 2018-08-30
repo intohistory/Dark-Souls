@@ -3,12 +3,13 @@ import java.util.List;
 import java.util.Scanner;
 import java.util.Random;
 
-// John u are bad
-
 public class mainGame 
 {
 	enum Item{CellKey, BasicShield, StarterSword, LongSword}
 	enum Room{Cell, HollowHallway, LadderRoom, Bonfire1, BossCourtyard, Bonfire2, ArcherHallway, BoulderRoom, UpperFloor, Path}
+	
+	public static int mattGayLevel = 100;
+	
 	
 	public static ItemObject weaponSlot = null;
 	public static ItemObject offhandSlot = null;
@@ -16,10 +17,6 @@ public class mainGame
 	public static ItemObject chestSlot = null;
 	public static ItemObject leggingsSlot = null;
 	public static ItemObject bootsSlot = null;
-	
-	/* FUCKING GAY HAH AHAH AHAH H
-	
-	*/
 	
 	public static RoomObject currentRoom;
 	public static RoomObject respawnRoom;
