@@ -1,7 +1,7 @@
 
 public class Enemy 
 {
-	enum EnemyTypes{Warrior, Archer, FireBomber, Pikeman, AsylumDemonBoss, Hollow, RollingBoulder};
+	enum EnemyTypes{Warrior, Archer, FireBomber, Pikeman, AsylumDemonBoss, Hollow, RollingBoulder, Knight};
 	
 	public int currentHealth;
 	public int maxHealth;
@@ -15,15 +15,24 @@ public class Enemy
 	
 	public boolean preparingToAttack = false;
 	public boolean isDodging = false;
+	public boolean isBlocking = false;
 	
 	public static Enemy CreateEnemy(EnemyTypes type)
 	{
 		Enemy currentEnemy = new Enemy();
 		currentEnemy.enemyType = type;
-		if(type == EnemyTypes.Warrior)
+		if(type == EnemyTypes.Knight)
 		{
-			currentEnemy.maxHealth = 350;
-			currentEnemy.currentHealth = 350;
+			currentEnemy.maxHealth = 400;
+			currentEnemy.currentHealth = 400;
+			currentEnemy.damage = 125;
+			currentEnemy.defense = 40;
+			currentEnemy.soulReward = 150;
+		}
+		else if(type == EnemyTypes.Warrior)
+		{
+			currentEnemy.maxHealth = 300;
+			currentEnemy.currentHealth = 300;
 			currentEnemy.damage = 100;
 			currentEnemy.defense = 20;
 			currentEnemy.soulReward = 50;

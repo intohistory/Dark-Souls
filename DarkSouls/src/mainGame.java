@@ -6,10 +6,9 @@ import java.util.Random;
 public class mainGame 
 {
 	enum Item{CellKey, BasicShield, StarterSword, LongSword}
-	enum Room{Cell, HollowHallway, LadderRoom, Bonfire1, BossCourtyard, Bonfire2, ArcherHallway, BoulderRoom, UpperFloor, Path}
+	enum Room{Cell, HollowHallway, LadderRoom, Bonfire1, BossCourtyard, Bonfire2, ArcherHallway, BoulderRoom, UpperFloor, KnightRoom, Pathway}
 	
 	public static int mattGayLevel = 100;
-	
 	
 	public static ItemObject weaponSlot = null;
 	public static ItemObject offhandSlot = null;
@@ -122,9 +121,48 @@ public class mainGame
 	   	String boulderRoomLookAround = "You are in a small room with a staircase directly in front of you. There is a large object on the top of the stairs";
 	   	roomList.add(RoomObject.AddRoom(Room.BoulderRoom, Room.UpperFloor, Room.ArcherHallway, null, null, boulderRoomDescription, boulderRoomLookAround, false, null, null, boulderRoomEnemyList));
 	   	
+		List<Enemy> upperFloorEnemyList = new ArrayList<Enemy>();
+		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Archer));
+		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
+		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
+		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
+	   	String upperFloorDescription = "You enter a long hallway with a balcony on the the left and an exit on the right";
+	   	String upperFloorLookAround = "You are in a long, dark hallway. On the left of the hallway is a balcony above a large courtyard. To the right is an exit to the prison. In front of you is a small room";
+	   	roomList.add(RoomObject.AddRoom(Room.UpperFloor, Room.KnightRoom, Room.BoulderRoom, Room.BossCourtyard, Room.Pathway, upperFloorDescription, upperFloorLookAround, false, null, null, upperFloorEnemyList));
 	   	
+	   	List<Enemy> knightRoomEnemyList = new ArrayList<Enemy>();
+		knightRoomEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Knight));
+	   	String knightRoomDescription = "You enter a very small room";
+	   	String knightRoomLookAround = "You are in a small room. There is a corpse in the corner";
+	   	roomList.add(RoomObject.AddRoom(Room.KnightRoom, Room.UpperFloor, null, null, null, knightRoomDescription, knightRoomLookAround, false, null, null, knightRoomEnemyList));
 	}
 	
+	public static void PlayerAttack(int enemyNum, boolean heavyAttack)
+	{
+		Random rand = new Random();
+		int damage = 0;
+		if(heavyAttack && currentRoom.enemies.get(enemyNum).isBlocking == false)
+		{
+			damage = rand.nextInt(21) - 10 + playerDamage * 2;
+			isHeavyAttacking = true;
+		}
+		else if(currentRoom.enemies.get(enemyNum).isBlocking = false)
+		{
+			damage = rand.nextInt(21) - 10 + playerDamage;
+		}		
+		else
+		{
+			System.out.println("The enemy blocks the attack");
+		}
+		currentRoom.enemies.get(enemyNum).currentHealth -= damage;
+		System.out.println("Dealt "+damage+" to enemy "+enemyNum);
+		if(currentRoom.enemies.get(enemyNum).currentHealth <= 0)
+		{
+			System.out.println("Killed enemy "+enemyNum);
+			System.out.println("Gained "+currentRoom.enemies.get(enemyNum).soulReward+" souls");
+			currentSouls += currentRoom.enemies.get(enemyNum).soulReward;
+		}
+	}
 	public static void Update()
 	{
 		if(gameRunning == true)
@@ -144,15 +182,7 @@ public class mainGame
 						int enemyNum = Integer.parseInt(nextCommand.substring(7, 8));
 						if(currentRoom.enemies.get(enemyNum).currentHealth > 0)
 						{
-							int damage = rand.nextInt(21) - 10 + playerDamage;
-							currentRoom.enemies.get(enemyNum).currentHealth -= damage;
-							System.out.println("Dealt "+damage+" to enemy "+enemyNum);
-							if(currentRoom.enemies.get(enemyNum).currentHealth <= 0)
-							{
-								System.out.println("Killed enemy "+enemyNum);
-								System.out.println("Gained "+currentRoom.enemies.get(enemyNum).soulReward+" souls");
-								currentSouls += currentRoom.enemies.get(enemyNum).soulReward;
-							}
+							PlayerAttack(enemyNum, false);
 						}
 					}
 				}
@@ -164,16 +194,7 @@ public class mainGame
 						int enemyNum = Integer.parseInt(nextCommand.substring(12, 13));
 						if(currentRoom.enemies.get(enemyNum).currentHealth > 0)
 						{
-							int damage = rand.nextInt(21) - 10 + playerDamage * 2;
-							currentRoom.enemies.get(enemyNum).currentHealth -= damage;
-							System.out.println("Dealt "+damage+" to enemy "+enemyNum);
-							if(currentRoom.enemies.get(enemyNum).currentHealth <= 0)
-							{
-								System.out.println("Killed enemy "+enemyNum);
-								System.out.println("Gained "+currentRoom.enemies.get(enemyNum).soulReward+" souls");
-								currentSouls += currentRoom.enemies.get(enemyNum).soulReward;
-							}
-							isHeavyAttacking = true;
+							PlayerAttack(enemyNum, true);
 						}
 					}
 				}
@@ -651,9 +672,31 @@ public class mainGame
 				}
 			}
 			
-			if(topEnemy.enemyType == Enemy.EnemyTypes.Warrior)
+			if(topEnemy.enemyType == Enemy.EnemyTypes.Warrior || topEnemy.enemyType == Enemy.EnemyTypes.Knight)
 			{
-				
+				Random rand = new Random();
+				int chance = rand.nextInt(101);	
+				if(topEnemy.isBlocking)
+				{
+					topEnemy.isBlocking = false;
+				}
+				if(chance <= 75)
+				{
+					DamagePlayer(topEnemy.damage, topEnemy);
+				}
+				else if(chance > 75 && chance <= 100)
+				{
+					int chanceToBlock = rand.nextInt(101);
+					if(chanceToBlock <= topEnemy.defense)
+					{
+						topEnemy.isBlocking  = true;
+						System.out.println("The "+topEnemy.enemyType+" blocks");
+					}
+					else
+					{
+						System.out.println("The "+topEnemy.enemyType+" tries to block but fails");
+					}
+				}
 			}
 			else if(topEnemy.enemyType == Enemy.EnemyTypes.Archer)
 			{
