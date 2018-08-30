@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class mainGame 
 {
-	enum Item{CellKey, BasicShield, StarterSword, LongSword}
+	enum Item{CellKey, BasicShield, StarterSword, LongSword, SoulOfALostUndead, EstusFlask}
 	enum Room{Cell, HollowHallway, LadderRoom, Bonfire1, BossCourtyard, Bonfire2, ArcherHallway, BoulderRoom, UpperFloor, KnightRoom, Pathway}
 	
 	public static int mattGayLevel = 100;
@@ -32,6 +32,8 @@ public class mainGame
 	public static boolean isDodging = false;
 	public static boolean isBlocking = false;
 	public static boolean isHeavyAttacking = false;
+	
+	public static boolean hasEstusFlasks = false;
 	
 	public static int currentSouls = 0;
 	public static int soulsToLevelUp = 150;
@@ -122,19 +124,30 @@ public class mainGame
 	   	roomList.add(RoomObject.AddRoom(Room.BoulderRoom, Room.UpperFloor, Room.ArcherHallway, null, null, boulderRoomDescription, boulderRoomLookAround, false, null, null, boulderRoomEnemyList));
 	   	
 		List<Enemy> upperFloorEnemyList = new ArrayList<Enemy>();
+		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
+		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
+		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
 		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Archer));
-		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
-		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
-		upperFloorEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Warrior));
 	   	String upperFloorDescription = "You enter a long hallway with a balcony on the the left and an exit on the right";
 	   	String upperFloorLookAround = "You are in a long, dark hallway. On the left of the hallway is a balcony above a large courtyard. To the right is an exit to the prison. In front of you is a small room";
 	   	roomList.add(RoomObject.AddRoom(Room.UpperFloor, Room.KnightRoom, Room.BoulderRoom, Room.BossCourtyard, Room.Pathway, upperFloorDescription, upperFloorLookAround, false, null, null, upperFloorEnemyList));
 	   	
 	   	List<Enemy> knightRoomEnemyList = new ArrayList<Enemy>();
 		knightRoomEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Knight));
+	   	List<ItemObject> knightRoomItemList = new ArrayList<ItemObject>();
+	   	for(int x = 0; x < 5; x++)
+	   	{
+	   		knightRoomItemList.add(ItemObject.CreateItem(0, 0, 0, 0, 0, 125, Item.EstusFlask, ItemObject.equipSlot.none));
+	   	}
 	   	String knightRoomDescription = "You enter a very small room";
 	   	String knightRoomLookAround = "You are in a small room. There is a corpse in the corner";
 	   	roomList.add(RoomObject.AddRoom(Room.KnightRoom, Room.UpperFloor, null, null, null, knightRoomDescription, knightRoomLookAround, false, null, null, knightRoomEnemyList));
+	   	
+	   	List<ItemObject> pathwayItemList = new ArrayList<ItemObject>();
+	   	pathwayItemList.add(ItemObject.CreateItem(0, 0, 0, 0, 100, 0, Item.SoulOfALostUndead, ItemObject.equipSlot.none));
+	   	String pathwayDescription = "You enter a very small room";
+	   	String pathwayLookAround = "You are in a small room. There is a corpse in the corner";
+	   	roomList.add(RoomObject.AddRoom(Room.Pathway, null, Room.UpperFloor, null, null, pathwayDescription, pathwayLookAround, false, pathwayItemList, null, null));
 	}
 	
 	public static void PlayerAttack(int enemyNum, boolean heavyAttack)
@@ -144,18 +157,20 @@ public class mainGame
 		if(heavyAttack && currentRoom.enemies.get(enemyNum).isBlocking == false)
 		{
 			damage = rand.nextInt(21) - 10 + playerDamage * 2;
+			currentRoom.enemies.get(enemyNum).currentHealth -= damage;
+			System.out.println("Dealt "+damage+" to enemy "+enemyNum);
 			isHeavyAttacking = true;
 		}
 		else if(currentRoom.enemies.get(enemyNum).isBlocking = false)
 		{
 			damage = rand.nextInt(21) - 10 + playerDamage;
+			currentRoom.enemies.get(enemyNum).currentHealth -= damage;
+			System.out.println("Dealt "+damage+" to enemy "+enemyNum);
 		}		
 		else
 		{
 			System.out.println("The enemy blocks the attack");
 		}
-		currentRoom.enemies.get(enemyNum).currentHealth -= damage;
-		System.out.println("Dealt "+damage+" to enemy "+enemyNum);
 		if(currentRoom.enemies.get(enemyNum).currentHealth <= 0)
 		{
 			System.out.println("Killed enemy "+enemyNum);
@@ -316,7 +331,12 @@ public class mainGame
 						for(int x = 0; x < currentRoom.items.size(); x++)
 						{
 							ItemObject item = currentRoom.items.get(x);
+							if(item.itemType == Item.EstusFlask)
+							{
+								hasEstusFlasks = true;
+							}
 							inventory.add((item));
+							System.out.println("Found a "+item.itemType);
 							RemoveAddItemStats(false, item);
 						}
 					}
@@ -598,6 +618,7 @@ public class mainGame
 		System.out.println("You Died");
 		MoveRooms(respawnRoom);
 		currentPlayerHealth = maxPlayerHealth;
+		RefillEstusFlasks();
 	}
 	public static int DamagePlayer(int baseDamage, Enemy enemySource)
 	{
@@ -832,10 +853,29 @@ public class mainGame
 			System.out.println("Inventory is empty");
 		}
 	}
+	public static void RefillEstusFlasks()
+	{
+		if(hasEstusFlasks)
+		{
+			int estusNum = 0;
+			for(int x = 0; x < inventory.size(); x++)
+			{
+				if(inventory.get(x).itemType == Item.EstusFlask)
+				{
+					estusNum++;
+				}
+			}
+		   	for(int y = 0; y < 5 - estusNum; y++)
+		   	{
+		   		inventory.add(ItemObject.CreateItem(0, 0, 0, 0, 0, 125, Item.EstusFlask, ItemObject.equipSlot.none));
+		   	}
+		}
+	}
 	public static void Save()
 	{
 		respawnRoom = currentRoom;
 		HealPlayer(true, 0);
+		RefillEstusFlasks();
 		for(int x = 0; x < roomList.size(); x++)
 		{
 			if(roomList.get(x).enemies != null)
