@@ -241,7 +241,23 @@ public class mainGame
 				}
 				else if(nextCommand.length() >= 6 && nextCommand.substring(0, 4).toLowerCase().equals("flee"))
 				{
-					int direction = Integer.parseInt(nextCommand.substring(5, 6));
+					String direction = "forward";
+					if(nextCommand.substring(5, 12).equals("forward"))
+					{
+						direction = nextCommand.substring(5, 12);
+					}
+					else if(nextCommand.substring(5, 9).equals("back"))
+					{
+						direction = nextCommand.substring(5, 9);
+					}
+					else if(nextCommand.substring(5, 9).equals("left"))
+					{
+						direction = nextCommand.substring(5, 9);
+					}
+					else if(nextCommand.substring(5, 10).equals("right"))
+					{
+						direction = nextCommand.substring(5, 10);
+					}
 					Flee(direction);
 					isFleeing = true;
 				}
@@ -857,21 +873,21 @@ public class mainGame
 			}
 		}
 	}
-	public static void Flee(int direction)
+	public static void Flee(String direction)
 	{
-		if(currentRoom.nextRoom != null && direction == 0)
+		if(currentRoom.nextRoom != null && direction.equals("forward"))
 		{
 			MoveRooms(FindRoom(currentRoom.nextRoom));
 		}
-		else if(currentRoom.previousRoom != null && direction == 1)
+		else if(currentRoom.previousRoom != null && direction.equals("back"))
 		{
 			MoveRooms(FindRoom(currentRoom.previousRoom));
 		}
-		else if(currentRoom.leftRoom != null && direction == 2)
+		else if(currentRoom.leftRoom != null && direction.equals("left"))
 		{
 			MoveRooms(FindRoom(currentRoom.leftRoom));
 		}
-		else if(currentRoom.rightRoom != null && direction == 3)
+		else if(currentRoom.rightRoom != null && direction.equals("right"))
 		{
 			MoveRooms(FindRoom(currentRoom.rightRoom));
 		}
@@ -904,10 +920,10 @@ public class mainGame
 		System.out.println("\"Inspect (item number)\": Inspect an item from you inventory to view its stats");
 		System.out.println("---------------Combat---------------");
 		System.out.println("\"Attack (enemy number)\": Deal damage to an enemy");
-		System.out.println("\"Attack (enemy number)\": Deal heavy damage to an enemy, but take extra damage from enemy attacks");
+		System.out.println("\"HeavyAttack (enemy number)\": Deal heavy damage to an enemy, but take extra damage from enemy attacks");
 		System.out.println("\"Roll\": Attempt to roll out of the way of the next attack from an enemy");
 		System.out.println("\"Block\": Attempt to block next attack from an enemy");
-		System.out.println("\"Flee (direction)\": Run from current enemies (0 for forward, 1 for backward, 2 for left, 3 for right)");
+		System.out.println("\"Flee (direction)\": Run from current enemies (forward, back, left, right)");
 	}
 	public static void OpenInventory()
 	{
