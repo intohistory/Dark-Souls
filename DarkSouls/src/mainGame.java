@@ -5,7 +5,7 @@ import java.util.Random;
 
 public class mainGame 
 {
-	enum Item{CellKey, BasicShield, StarterSword, LongSword, SoulOfALostUndead, EstusFlask}
+	enum Item{CellKey, BasicShield, StarterSword, LongSword, SoulOfALostUndead, EstusFlask, IronRing}
 	enum Room{Cell, HollowHallway, LadderRoom, Bonfire1, BossCourtyard, Bonfire2, ArcherHallway, BoulderRoom, UpperFloor, KnightRoom, Pathway}
 	
 	public static int mattGayLevel = 100;
@@ -16,6 +16,7 @@ public class mainGame
 	public static ItemObject chestSlot = null;
 	public static ItemObject leggingsSlot = null;
 	public static ItemObject bootsSlot = null;
+	public static ItemObject ringSlot = null;
 	
 	public static RoomObject currentRoom;
 	public static RoomObject respawnRoom;
@@ -100,7 +101,7 @@ public class mainGame
 	   	
 	   	List<Enemy> bossCourtyardEnemies = new ArrayList<Enemy>();
 	   	bossCourtyardEnemies.add(Enemy.CreateEnemy(Enemy.EnemyTypes.AsylumDemonBoss));
-	   	String bossCourtyardDescription = "You enter a large courtyard with a balcony above you and multiple doors.";
+	   	String bossCourtyardDescription = "You enter a large courtyard with a balcony above you and multiple doors to your left and right.";
 	   	String bossCourtyardLookAround = "You notice there is debris scatter throughout the courtyard. There is a door leading downwards to the left and a locked door in front of you.";
 	   	roomList.add(RoomObject.AddRoom(Room.BossCourtyard, null, Room.Bonfire1, Room.Bonfire2, null, bossCourtyardDescription, bossCourtyardLookAround, false, null, null, bossCourtyardEnemies));
 	   	
@@ -110,7 +111,11 @@ public class mainGame
 	   	
 		List<ItemObject> archerHallwayItemList = new ArrayList<ItemObject>();
 		archerHallwayItemList.add(ItemObject.CreateItem(15, 10, 0, 0, 0, 0, Item.BasicShield, ItemObject.equipSlot.offhand));
-		archerHallwayItemList.add(ItemObject.CreateItem(0, 10, 0, 35, 0, 0, Item.LongSword, ItemObject.equipSlot.weapon));
+		archerHallwayItemList.add(ItemObject.CreateItem(0, 0, 0, 35, 0, 0, Item.LongSword, ItemObject.equipSlot.weapon));
+	   	for(int x = 0; x < 5; x++)
+	   	{
+	   		archerHallwayItemList.add(ItemObject.CreateItem(0, 0, 0, 0, 0, 200, Item.EstusFlask, ItemObject.equipSlot.none));
+	   	}
 		List<Enemy> archerHallwayEnemyList = new ArrayList<Enemy>();
 		archerHallwayEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Archer));
 	   	String archerHallwayDescription = "You enter a long hallway with an open cell to the left";
@@ -120,7 +125,7 @@ public class mainGame
 		List<Enemy> boulderRoomEnemyList = new ArrayList<Enemy>();
 		boulderRoomEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.RollingBoulder));
 	   	String boulderRoomDescription = "You enter a small room with a staircase in front of you";
-	   	String boulderRoomLookAround = "You are in a small room with a staircase directly in front of you. There is a large object on the top of the stairs";
+	   	String boulderRoomLookAround = "You are in a small room with a staircase directly in front of you.";
 	   	roomList.add(RoomObject.AddRoom(Room.BoulderRoom, Room.UpperFloor, Room.ArcherHallway, null, null, boulderRoomDescription, boulderRoomLookAround, false, null, null, boulderRoomEnemyList));
 	   	
 		List<Enemy> upperFloorEnemyList = new ArrayList<Enemy>();
@@ -135,10 +140,7 @@ public class mainGame
 	   	List<Enemy> knightRoomEnemyList = new ArrayList<Enemy>();
 		knightRoomEnemyList.add(Enemy.CreateEnemy(Enemy.EnemyTypes.Knight));
 	   	List<ItemObject> knightRoomItemList = new ArrayList<ItemObject>();
-	   	for(int x = 0; x < 5; x++)
-	   	{
-	   		knightRoomItemList.add(ItemObject.CreateItem(0, 0, 0, 0, 0, 125, Item.EstusFlask, ItemObject.equipSlot.none));
-	   	}
+	   	knightRoomItemList.add(ItemObject.CreateItem(0, 0, 5, 0, 0, 0, Item.IronRing, ItemObject.equipSlot.ring));
 	   	String knightRoomDescription = "You enter a very small room";
 	   	String knightRoomLookAround = "You are in a small room. There is a corpse in the corner";
 	   	roomList.add(RoomObject.AddRoom(Room.KnightRoom, Room.UpperFloor, null, null, null, knightRoomDescription, knightRoomLookAround, false, null, null, knightRoomEnemyList));
@@ -166,11 +168,12 @@ public class mainGame
 			damage = rand.nextInt(21) - 10 + playerDamage;
 			currentRoom.enemies.get(enemyNum).currentHealth -= damage;
 			System.out.println("Dealt "+damage+" to enemy "+enemyNum);
-		}		
+		}	
 		else
 		{
 			System.out.println("The enemy blocks the attack");
 		}
+		
 		if(currentRoom.enemies.get(enemyNum).currentHealth <= 0)
 		{
 			System.out.println("Killed enemy "+enemyNum);
@@ -184,7 +187,6 @@ public class mainGame
 		{
 			Scanner scan = new Scanner(System.in);
 			String nextCommand = scan.nextLine();
-			//If there are enemies in the room only accept battle commands
 			if(CheckForEnemies(currentRoom))
 			{
 				boolean isFleeing = false;
@@ -243,18 +245,71 @@ public class mainGame
 					Flee(direction);
 					isFleeing = true;
 				}
+				else if(nextCommand.toLowerCase().equals("stats"))
+				{
+					System.out.println(playerDamage+" Damage");
+					System.out.println(playerDefense+" Defense");
+					System.out.println(playerAGI+" Agility");
+					System.out.println(currentPlayerHealth+"/"+maxPlayerHealth+" Health");
+					System.out.println(currentSouls+"/"+soulsToLevelUp+" Souls");
+				}
+				else if(nextCommand.toLowerCase().equals("instructions"))
+				{
+					Instructions();
+				}
+				else if(nextCommand.length() >= 6 && nextCommand.substring(0, 5).toLowerCase().equals("equip"))
+				{
+					int itemNum = Integer.parseInt((nextCommand.substring(6,7)));
+					if(inventory.get(itemNum) != null && inventory.get(itemNum).slot != ItemObject.equipSlot.none)
+					{
+						EquipItem(inventory.get(itemNum));
+					}
+					else
+					{
+						System.out.println("This item is not equippable");
+					}
+				}
+				else if(nextCommand.length() >= 4 && nextCommand.substring(0, 3).toLowerCase().equals("use"))
+				{
+					int itemNum = Integer.parseInt((nextCommand.substring(4,5)));
+					if(inventory.get(itemNum) != null)
+					{
+						UseItem(inventory.get(itemNum));
+					}
+					else
+					{
+						System.out.println("No item in this slot");
+					}
+				}
+				else if(nextCommand.length() >= 5 && nextCommand.substring(0, 4).toLowerCase().equals("drop"))
+				{
+					int itemNum = Integer.parseInt((nextCommand.substring(5,6)));
+					if(inventory.get(itemNum) != null)
+					{
+						DropItem(inventory.get(itemNum));
+					}
+					else
+					{
+						System.out.println("No item in this slot");
+					}
+				}
+				else if(nextCommand.toLowerCase().equals("stop"))
+				{
+					System.out.println("Ending game");
+					gameRunning = false;
+				}
 				else
 				{
 					System.out.println("That is not a valid command");
 					validCommand = false;
 				}
+				
 				if(validCommand && isFleeing == false)
 				{
 					PrintEnemyStats(currentRoom);
 					EnemyAI();
 				}
 			}
-			//If there are no enemies in the room accept regular commands
 			else
 			{
 				if(nextCommand.toLowerCase().equals("forward"))
@@ -337,7 +392,6 @@ public class mainGame
 							}
 							inventory.add((item));
 							System.out.println("Found a "+item.itemType);
-							RemoveAddItemStats(false, item);
 						}
 					}
 				}
@@ -552,6 +606,22 @@ public class mainGame
 				System.out.println("Replaced "+bootsSlot.itemType+" with "+item.itemType);
 			}
 		}
+		if(item.slot == ItemObject.equipSlot.ring)
+		{
+			System.out.println("Equiped "+item.itemType);
+			if(ringSlot == null)
+			{
+				RemoveAddItemStats(false, item);
+				ringSlot = item;
+			}
+			else
+			{
+				RemoveAddItemStats(true, ringSlot);
+				RemoveAddItemStats(false, item);
+				ringSlot = item;
+				System.out.println("Replaced "+ringSlot.itemType+" with "+item.itemType);
+			}
+		}
 	}
 	public static void RemoveAddItemStats(boolean remove, ItemObject item)
 	{
@@ -562,17 +632,17 @@ public class mainGame
 				maxPlayerHealth -= item.healthStat;
 				System.out.println("Removed "+item.healthStat+" max health");
 			}
-			else if(item.defenseStat > 0)
+			if(item.defenseStat > 0)
 			{
 				playerDefense -= item.defenseStat;
 				System.out.println("Removed "+item.defenseStat+" defense");
 			}
-			else if(item.AGIstat > 0)
+			if(item.AGIstat > 0)
 			{
 				playerAGI -= item.AGIstat;
 				System.out.println("Removed "+item.AGIstat+" agility");
 			}
-			else if(item.damageStat > 0)
+			if(item.damageStat > 0)
 			{
 				playerDamage -= item.damageStat;
 				System.out.println("Removed "+item.damageStat+" damage");
@@ -585,17 +655,17 @@ public class mainGame
 				maxPlayerHealth += item.healthStat;
 				System.out.println("Added "+item.healthStat+" max health");
 			}
-			else if(item.defenseStat > 0)
+			if(item.defenseStat > 0)
 			{
 				playerDefense += item.defenseStat;
 				System.out.println("Added "+item.defenseStat+" defense");
 			}
-			else if(item.AGIstat > 0)
+			if(item.AGIstat > 0)
 			{
 				playerAGI += item.AGIstat;
 				System.out.println("Added "+item.AGIstat+" agility");
 			}
-			else if(item.damageStat > 0)
+			if(item.damageStat > 0)
 			{
 				playerDamage += item.damageStat;
 				System.out.println("Added "+item.damageStat+" damage");
@@ -619,6 +689,7 @@ public class mainGame
 		MoveRooms(respawnRoom);
 		currentPlayerHealth = maxPlayerHealth;
 		RefillEstusFlasks();
+		RespawnAllEnemies();
 	}
 	public static int DamagePlayer(int baseDamage, Enemy enemySource)
 	{
@@ -871,11 +942,8 @@ public class mainGame
 		   	}
 		}
 	}
-	public static void Save()
+	public static void RespawnAllEnemies()
 	{
-		respawnRoom = currentRoom;
-		HealPlayer(true, 0);
-		RefillEstusFlasks();
 		for(int x = 0; x < roomList.size(); x++)
 		{
 			if(roomList.get(x).enemies != null)
@@ -886,6 +954,13 @@ public class mainGame
 				}
 			}
 		}
+	}
+	public static void Save()
+	{
+		respawnRoom = currentRoom;
+		HealPlayer(true, 0);
+		RefillEstusFlasks();
+		RespawnAllEnemies();
 	}
 	public static void LevelUp()
 	{

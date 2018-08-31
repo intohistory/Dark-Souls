@@ -33,7 +33,7 @@ public class Enemy
 		{
 			currentEnemy.maxHealth = 300;
 			currentEnemy.currentHealth = 300;
-			currentEnemy.damage = 100;
+			currentEnemy.damage = 80;
 			currentEnemy.defense = 20;
 			currentEnemy.soulReward = 50;
 		}
@@ -41,7 +41,7 @@ public class Enemy
 		{
 			currentEnemy.maxHealth = 250;
 			currentEnemy.currentHealth = 250;
-			currentEnemy.damage = 130;
+			currentEnemy.damage = 120;
 			currentEnemy.defense = 10;
 			currentEnemy.soulReward = 45;
 		}

@@ -1,7 +1,7 @@
 
 public class ItemObject 
 {
-	public enum equipSlot {weapon, offhand, helmet, chest, leggings, boots, none};
+	public enum equipSlot {weapon, offhand, helmet, chest, leggings, boots, ring, none};
 	public mainGame.Item itemType;
 	public int healthStat;
 	public int defenseStat;
