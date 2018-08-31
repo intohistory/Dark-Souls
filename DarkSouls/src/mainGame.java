@@ -161,7 +161,7 @@ public class mainGame
 			System.out.println("Dealt "+damage+" to enemy "+enemyNum);
 			isHeavyAttacking = true;
 		}
-		else if(currentRoom.enemies.get(enemyNum).isBlocking = false)
+		else if(currentRoom.enemies.get(enemyNum).isBlocking == false)
 		{
 			damage = rand.nextInt(21) - 10 + playerDamage;
 			currentRoom.enemies.get(enemyNum).currentHealth -= damage;
