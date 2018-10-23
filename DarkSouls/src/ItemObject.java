@@ -10,6 +10,7 @@ public class ItemObject
 	public int soulsGain;
 	public int healthGain;
 	public equipSlot slot;
+	public boolean isEquipped = false;
 	
 	public static ItemObject CreateItem(int healthStatToAdd, int defenseStatToAdd, int AGIStatToAdd, int damageStatToAdd, int soulsGainToAdd, int healthGainToAdd, mainGame.Item itemTypeToAdd, equipSlot slotToAdd)
 	{

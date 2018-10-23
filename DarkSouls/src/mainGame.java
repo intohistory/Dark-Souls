@@ -45,7 +45,7 @@ public class mainGame
 		CreateRooms();
 		respawnRoom = FindRoom(Room.Cell);
 		Instructions();
-		System.out.println("Press enter to start");
+		System.out.println("Press anything to start");
 		if(scan.nextLine() != null)
 		{
 			MoveRooms(FindRoom(Room.Cell));
@@ -196,7 +196,7 @@ public class mainGame
 					if(nextCommand.substring(7, 8) != null)
 					{
 						int enemyNum = Integer.parseInt(nextCommand.substring(7, 8));
-						if(currentRoom.enemies.get(enemyNum).currentHealth > 0)
+						if(currentRoom.enemies.size() > enemyNum && currentRoom.enemies.get(enemyNum).currentHealth > 0)
 						{
 							PlayerAttack(enemyNum, false);
 						}
@@ -207,7 +207,7 @@ public class mainGame
 					if(nextCommand.substring(7, 8) != null)
 					{
 						int enemyNum = Integer.parseInt(nextCommand.substring(12, 13));
-						if(currentRoom.enemies.get(enemyNum).currentHealth > 0)
+						if(currentRoom.enemies.size() > enemyNum && currentRoom.enemies.get(enemyNum).currentHealth > 0)
 						{
 							PlayerAttack(enemyNum, true);
 						}
@@ -242,19 +242,19 @@ public class mainGame
 				else if(nextCommand.length() >= 6 && nextCommand.substring(0, 4).toLowerCase().equals("flee"))
 				{
 					String direction = "forward";
-					if(nextCommand.substring(5, 12).equals("forward"))
+					if(nextCommand.length() == 12 && nextCommand.substring(5, 12).equals("forward"))
 					{
 						direction = nextCommand.substring(5, 12);
 					}
-					else if(nextCommand.substring(5, 9).equals("back"))
+					else if(nextCommand.length() == 9 && nextCommand.substring(5, 9).equals("back"))
 					{
 						direction = nextCommand.substring(5, 9);
 					}
-					else if(nextCommand.substring(5, 9).equals("left"))
+					else if(nextCommand.length() == 9 && nextCommand.substring(5, 9).equals("left"))
 					{
 						direction = nextCommand.substring(5, 9);
 					}
-					else if(nextCommand.substring(5, 10).equals("right"))
+					else if(nextCommand.length() == 10 && nextCommand.substring(5, 10).equals("right"))
 					{
 						direction = nextCommand.substring(5, 10);
 					}
@@ -393,7 +393,7 @@ public class mainGame
 				}
 				else if(nextCommand.toLowerCase().equals("search"))
 				{
-					if(currentRoom.items == null)
+					if(currentRoom.items == null || currentRoom.items.size() == 0)
 					{
 						System.out.println("There is nothing to search in this room");
 					}
@@ -409,6 +409,7 @@ public class mainGame
 							inventory.add((item));
 							System.out.println("Found a "+item.itemType);
 						}
+						currentRoom.items.clear();
 					}
 				}
 				else if(nextCommand.toLowerCase().equals("inventory"))
@@ -508,10 +509,12 @@ public class mainGame
 		if(item.healthGain > 0)
 		{
 			HealPlayer(false, item.healthGain);
+			inventory.remove(item);
 		}
 		else if(item.soulsGain > 0)
 		{
 			currentSouls += item.soulsGain;
+			inventory.remove(item);
 		}
 		else
 		{
@@ -522,6 +525,7 @@ public class mainGame
 	{
 		RemoveAddItemStats(true, item);
 		inventory.remove(inventory.indexOf(item));
+		currentRoom.items.add(item);
 		System.out.println("Dropped "+item.itemType);
 	}
 	public static void EquipItem(ItemObject item)
@@ -663,6 +667,8 @@ public class mainGame
 				playerDamage -= item.damageStat;
 				System.out.println("Removed "+item.damageStat+" damage");
 			}
+			
+			item.isEquipped = false;
 		}
 		else
 		{
@@ -686,6 +692,8 @@ public class mainGame
 				playerDamage += item.damageStat;
 				System.out.println("Added "+item.damageStat+" damage");
 			}
+			
+			item.isEquipped = true;
 		}
 	}
 	public static ItemObject FindItem(Item item)
@@ -932,7 +940,15 @@ public class mainGame
 			System.out.println("Inventory:");
 			for(int x = 0; x < inventory.size(); x++)
 			{
-				System.out.println(x+": "+inventory.get(x).itemType);
+				System.out.print(x+": "+inventory.get(x).itemType);
+				if(inventory.get(x).isEquipped)
+				{
+					System.out.println(": equipped");
+				}
+				else
+				{
+					System.out.println("");
+				}
 			}
 		}
 		else
@@ -1011,7 +1027,6 @@ public class mainGame
 		HealPlayer(true, 0);
 		currentSouls = currentSouls - soulsToLevelUp;
 		soulsToLevelUp *= 1.15;
-		scan.close();
 	}
 	public static boolean CheckForEnemies(RoomObject room)
 	{
